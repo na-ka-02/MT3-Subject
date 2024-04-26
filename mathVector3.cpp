@@ -328,3 +328,15 @@ Matrix4x4 MakeRotateZMatrix(float radius)
 
 	return Matrix4x4(result);
 }
+
+//3次元アフィン変換行列
+Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate)
+{
+	Matrix4x4 makeRotateZMatrix = MakeRotateZMatrix(rotate.z);
+	Matrix4x4 makeRotateYMatrix = MakeRotateYMatrix(rotate.y);
+	Matrix4x4 makeRotateXMatrix = MakeRotateXMatrix(rotate.x);
+
+	Matrix4x4 makeRotate = Multiply(makeRotateXMatrix, Multiply(makeRotateYMatrix, makeRotateZMatrix));
+
+	return Matrix4x4(Multiply(MakeScaleMatrix(scale), Multiply(makeRotate, MakeTranslateMatrix(translate))));
+}
