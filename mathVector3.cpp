@@ -287,3 +287,44 @@ Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix)
 	return Vector3(result);
 }
 
+Matrix4x4 MakeRotateXMatrix(float radius)
+{
+	Matrix4x4 result = {};
+
+	result.m[0][0] = 1;
+	result.m[1][1] = cosf(radius);
+	result.m[1][2] = sinf(radius);
+	result.m[2][1] = -sinf(radius);
+	result.m[2][2] = cosf(radius);
+	result.m[3][3] = 1;
+
+	return Matrix4x4(result);
+}
+
+Matrix4x4 MakeRotateYMatrix(float radius)
+{
+	Matrix4x4 result = {};
+
+	result.m[0][0] = cosf(radius);
+	result.m[0][2] = -sinf(radius);
+	result.m[1][1] = 1;
+	result.m[2][0] = sinf(radius);
+	result.m[2][2] = cosf(radius);
+	result.m[3][3] = 1;
+
+	return Matrix4x4(result);
+}
+
+Matrix4x4 MakeRotateZMatrix(float radius)
+{
+	Matrix4x4 result = {};
+
+	result.m[0][0] = cosf(radius);
+	result.m[0][1] = sinf(radius);
+	result.m[1][0] = -sinf(radius);
+	result.m[1][1] = cosf(radius);
+	result.m[2][2] = 1;
+	result.m[3][3] = 1;
+
+	return Matrix4x4(result);
+}
