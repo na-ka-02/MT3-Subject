@@ -33,3 +33,10 @@ Matrix4x4 MakeIndentity4x4();
 static const int kRowHeight = 20;
 static const int kColumWidth = 60;
 void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix);
+
+//平行移動行列
+Matrix4x4 MakeTranslateMatrix(const Vector3& translate);
+//拡大縮小行列
+Matrix4x4 MakeScaleMatrix(const Vector3& scale);
+//座標変換 
+Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
