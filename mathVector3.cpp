@@ -2,6 +2,7 @@
 #include <Novice.h>
 #include "math.h"
 #include <assert.h>
+#include "cmath"
 
 //加算__
 Vector3 Add(const Vector3& v1, const Vector3& v2)
@@ -236,6 +237,7 @@ void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix)
 	}
 }
 
+
 //平行移動行列
 Matrix4x4 MakeTranslateMatrix(const Vector3& translate)
 {
@@ -286,7 +288,7 @@ Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix)
 
 	return Vector3(result);
 }
-
+//X軸回転行列
 Matrix4x4 MakeRotateXMatrix(float radius)
 {
 	Matrix4x4 result = {};
@@ -300,7 +302,7 @@ Matrix4x4 MakeRotateXMatrix(float radius)
 
 	return Matrix4x4(result);
 }
-
+//Y軸回転行列
 Matrix4x4 MakeRotateYMatrix(float radius)
 {
 	Matrix4x4 result = {};
@@ -314,7 +316,7 @@ Matrix4x4 MakeRotateYMatrix(float radius)
 
 	return Matrix4x4(result);
 }
-
+//Z軸回転行列
 Matrix4x4 MakeRotateZMatrix(float radius)
 {
 	Matrix4x4 result = {};
@@ -328,7 +330,6 @@ Matrix4x4 MakeRotateZMatrix(float radius)
 
 	return Matrix4x4(result);
 }
-
 //3次元アフィン変換行列
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate)
 {
@@ -339,4 +340,44 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Ve
 	Matrix4x4 makeRotate = Multiply(makeRotateXMatrix, Multiply(makeRotateYMatrix, makeRotateZMatrix));
 
 	return Matrix4x4(Multiply(MakeScaleMatrix(scale), Multiply(makeRotate, MakeTranslateMatrix(translate))));
+}
+//正射影行列
+Matrix4x4 MakeOrthographiMatrix(float left, float top, float right, float bottom, float nearClip, float farClip)
+{
+	Matrix4x4 result = {};
+	result.m[0][0] = 2 / (right - left);
+	result.m[1][1] = 2 / (top - bottom);
+	result.m[2][2] = 1 / (farClip - nearClip);
+	result.m[3][0] = (left + right) / (left - right);
+	result.m[3][1] = (top + bottom) / (bottom - top);
+	result.m[3][2] = nearClip / (nearClip - farClip);
+	result.m[3][3] = 1;
+	return Matrix4x4(result);
+}
+//透視投影行列
+Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip)
+{
+
+	Matrix4x4 result = {};
+	result.m[0][0] = 1 / aspectRatio * (1 / tan(fovY / 2));
+	result.m[1][1] = 1 / tan(fovY / 2);
+	result.m[2][2] = farClip / (farClip - nearClip);
+	result.m[2][3] = 1;
+	result.m[3][2] = (-nearClip * farClip) / (farClip - nearClip);
+
+	return Matrix4x4(result);
+}
+//ビューポート変換行列
+Matrix4x4 MakeViewportMatirix(float left, float top, float width, float height, float minDepth, float maxDepth)
+{
+	Matrix4x4 result = {};
+	result.m[0][0] = width / 2;
+	result.m[1][1] = -(height / 2);
+	result.m[2][2] = maxDepth - minDepth;
+	result.m[3][0] = left + (width / 2);
+	result.m[3][1] = top + (height / 2);
+	result.m[3][2] = minDepth;
+	result.m[3][3] = 1;
+
+	return Matrix4x4(result);
 }
