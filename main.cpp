@@ -1,5 +1,5 @@
 #include <Novice.h>
-#include"mathVector3.h"
+#include"mathMT-Git.h"
 
 const char kWindowTitle[] = "GC2B_12_ナカムラ_アヤネ_MT3";
 

@@ -38,7 +38,7 @@
     <ClCompile Include="C:\KamataEngine\DirectXGame\base\StringUtility.cpp">
       <Filter>KamataEngine\Source</Filter>
     </ClCompile>
-    <ClCompile Include="mathVector3.cpp">
+    <ClCompile Include="mathMT-Git.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -114,6 +114,6 @@
     <ClInclude Include="C:\KamataEngine\DirectXGame\base\StringUtility.h">
       <Filter>KamataEngine\Include</Filter>
     </ClInclude>
-    <ClInclude Include="mathVector3.h" />
+    <ClInclude Include="mathMT-Git.h" />
   </ItemGroup>
 </Project>
