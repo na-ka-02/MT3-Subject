@@ -7,22 +7,13 @@ const char kWindowTitle[] = "GC2B_12_ナカムラ_アヤネ_MT3";
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
-	//画面の大きさ
-	int kWindowWidth = 1280;
-	int kWindowHeight = 720;
-
 	// ライブラリの初期化
-	Novice::Initialize(kWindowTitle, kWindowWidth, kWindowHeight);
+	Novice::Initialize(kWindowTitle, 1280, 720);
 
-	//クロス積
-	Vector3 v1{ 1.2f,-3.9f,2.5f };
-	Vector3 v2{ 2.8f,0.4f,-1.3f };
-	Vector3 cross = Cross(v1, v2);
-	//入力
-	Vector3 rotate{};
-	Vector3 translate{};
-	//よくわからん
-	Vector3 cameraPosition{};
+	Vector3 v1{ 1.0f,3.0f,-5.0f };
+	Vector3 v2{ 4.0f,-1.0f,2.0f };
+	float k = { 4.0f };
+	//int kRowHeight = 50;
 
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
@@ -41,51 +32,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
-		//入力
-		//前
-		if (keys[DIK_S])
-		{
-			translate.z += 0.5f;
-		}
-		//後ろ
-		if (keys[DIK_W])
-		{
-			translate.z -= 0.5f;
-		}
-		//右
-		if (keys[DIK_D])
-		{
-			translate.x += 0.5f;
-		}
-		//左
-		if (keys[DIK_A])
-		{
-			translate.x += 0.5f;
-		}
-		//図形回転
-		rotate.y -= 0.1f;
-		//各種行列の計算
-		Matrix4x4 woldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, rotate, translate);
-		Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, cameraPosition);
-		Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-		Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(kWindowWidth)/float(kWindowHeight),0.1f,100.0f);
-		Matrix4x4 worldViewProjectionMatrix=Multiply(woldMatrix,Multiply(viewMatrix,projectionMatrix));
-		Matrix4x4 viewportMatrix=MakeViewportMatirix(0,0,float(kWindowWidth),float(kWindowHeight),0.0f,1.0f);
-		Vector3 screenVertices[3]={};
-		for(uint32_t i=0;i<3;++i)
-		{
-		Vector3 ndcVertex=Transform(kLocal)
-		}
+		Vector3 resultAdd = Add(v1, v2);
+		Vector3 resultSubtract = Subtract(v1, v2);
+		Vector3 resultMultiply = Multiply(k, v1);
+		float resultDot = Dot(v1, v2);
+		float resultLength = Length(v1);
+		Vector3 resultNormalize = Nomalize(v2);
 
-			///
-			/// ↑更新処理ここまで
-			///
+		///
+		/// ↑更新処理ここまで
+		///
 
-			///
-			/// ↓描画処理ここから
-			///
+		///
+		/// ↓描画処理ここから
+		///
 
-			VectorScreenPrintf(0, 0, cross, "Cross");
+		VectorScreenPrintf(0, 0, resultAdd, " : Add");
+		VectorScreenPrintf(0, kRowHeight, resultSubtract, " : Subtract");
+		VectorScreenPrintf(0, kRowHeight * 2, resultMultiply, " : Multiply");
+		Novice::ScreenPrintf(0, kRowHeight * 3, "%.02f : Dot", resultDot);
+		Novice::ScreenPrintf(0, kRowHeight * 4, "%.02f : Length", resultLength);
+		VectorScreenPrintf(0, kRowHeight * 5, resultNormalize, " : Normalize");
 
 		///
 		/// ↑描画処理ここまで
@@ -104,3 +71,4 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Novice::Finalize();
 	return 0;
 }
+
