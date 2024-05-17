@@ -21,7 +21,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//入力
 	Vector3 rotate{};
 	Vector3 translate{};
-	//よくわからん
+	//カメラポジション
 	Vector3 cameraPosition{0.0f,0.0f,-5.0f};
 
 	// キー入力結果を受け取る箱
@@ -42,6 +42,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 
 		//入力
+		// 画面を1とするから、数図でかすぎたら行き過ぎてしまう
+		// ので、0.05とか小さい値にすること
 		//前
 		if (keys[DIK_S])
 		{
@@ -65,14 +67,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//図形回転
 		rotate.y -= 0.1f;
 		//各種行列の計算
+		//ワールド座標変換
 		Matrix4x4 woldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, rotate, translate);
+		//カメラ座標変換
 		Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, cameraPosition);
+		//ビュー座標変換
 		Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+		//透視投影座標変換
 		Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(kWindowWidth) / float(kWindowHeight), 0.1f, 100.0f);
+		//見た目変更座標変換
 		Matrix4x4 worldViewProjectionMatrix = Multiply(woldMatrix, Multiply(viewMatrix, projectionMatrix));
+		//ビューポート座標変換
 		Matrix4x4 viewportMatrix = MakeViewportMatirix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
+		//スクリーンに映す座標
 		Vector3 screenVertices[3] = {};
+		//表示する三角形のx軸,y軸,z軸の位置
 		Vector3 kLocalVertices[3]={{0.0f,0.5f,0.0f},{0.5f,-0.5f,0.0f},{-0.5f,-0.5f,0.0f}};
+		//表示する三角形の座標変換
 		for (uint32_t i = 0; i < 3;++i)
 		{
 			Vector3 ndcVertex = Transform(kLocalVertices[i], worldViewProjectionMatrix);
