@@ -115,5 +115,6 @@
       <Filter>KamataEngine\Include</Filter>
     </ClInclude>
     <ClInclude Include="mathMT-Git.h" />
+    <ClInclude Include="Sphere.h" />
   </ItemGroup>
 </Project>

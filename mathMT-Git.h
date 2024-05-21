@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Vector3.h"
 #include "Matrix4x4.h"
+#include "Sphere.h"
 
 //加算
 Vector3 Add(const Vector3& v1, const Vector3& v2);
@@ -54,3 +55,7 @@ Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip
 Matrix4x4 MakeViewportMatirix(float left, float top, float width, float height, float minDepth, float maxDepth);
 //クロス積
 Vector3 Cross(const Vector3& v1, const Vector3& v2);
+//グリッド
+void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatirx);
+//球
+void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatirx, const Matrix4x4& viewportMatrix, uint32_t color);

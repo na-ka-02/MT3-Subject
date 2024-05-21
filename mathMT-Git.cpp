@@ -1,5 +1,6 @@
 ﻿#include "mathMT-Git.h"
 #include <Novice.h>
+#define _USE_MATH_DEFINES
 #include "math.h"
 #include <assert.h>
 #include "cmath"
@@ -390,4 +391,48 @@ Vector3 Cross(const Vector3& v1, const Vector3& v2)
 	result.z = v1.x * v2.y - v1.y * v2.x;
 
 	return Vector3(result);
+}
+//グリッド
+void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatirx)
+{
+	const float kGridHalfWidth = 2.0f;//Gridの半分の幅
+	const uint32_t kSubdivision = 10;//分割数
+	const float kGridEvery = (kGridHalfWidth * 2.0f) / float(kSubdivision);//1つ分の長さ
+	//奥から手間への線を徐々に引いていく
+	for(uint32_t xIndex=0;xIndex<=kSubdivision;++xIndex)
+	{
+	//上の情報を使ってワールド座標系を始点と終点を求める
+	
+	//スクリーン座標系まで変換をかける
+	//変換した座標を使って表示。色は薄い灰色(0xAAAAAAFF)
+	}
+	for(uint32_t zIndex=0;zIndex<=kSubdivision;++zIndex)
+	{
+	
+	}
+}
+//球
+void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatirx, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	const uint32_t kSubdivision = 16;//球の分割数
+	const float kLonEvery = 36;//経度分割1つ分の角度
+	const float kLatEvery = 36;//緯度分割1つ分の角度
+	//緯度の方向に分割 -π/2 ～ π/2
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex)
+	{
+		float lat = -(M_PI) / 2.0f + kLatEvery * latIndex;//現在の緯度
+		//経度の方向に分割　0～2π
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex)
+		{
+			float lon = lonIndex * kLonEvery;//現在の経度
+			//world座標系でのa,b,cを求める
+			Vector3 a, b, c;
+			//a,b,cをScreen座標系まで変換
+
+			//ab,bcで線を引く
+			Novice::DrawLine(a.x, a.y, b.x, b.y, color);
+			Novice::DrawLine(b.x, b.y, c.x, c.y, color);
+		}
+	}
+
 }
