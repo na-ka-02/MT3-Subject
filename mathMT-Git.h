@@ -2,6 +2,7 @@
 #include "Vector3.h"
 #include "Matrix4x4.h"
 #include "Sphere.h"
+#include<cstdint>
 
 //加算
 Vector3 Add(const Vector3& v1, const Vector3& v2);

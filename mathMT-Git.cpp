@@ -4,6 +4,7 @@
 #include "math.h"
 #include <assert.h>
 #include "cmath"
+#include<numbers>
 
 //加算__
 Vector3 Add(const Vector3& v1, const Vector3& v2)
@@ -358,7 +359,6 @@ Matrix4x4 MakeOrthographiMatrix(float left, float top, float right, float bottom
 //透視投影行列
 Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip)
 {
-
 	Matrix4x4 result = {};
 	result.m[0][0] = 1 / aspectRatio * (1 / tan(fovY / 2));
 	result.m[1][1] = 1 / tan(fovY / 2);
@@ -392,47 +392,84 @@ Vector3 Cross(const Vector3& v1, const Vector3& v2)
 
 	return Vector3(result);
 }
-//グリッド
-void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatirx)
+//球
+void DrawSphere
+(
+	const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix,
+	uint32_t color
+)
 {
+	float pi = std::numbers::pi_v<float>;
+	//球の分割数
+	const uint32_t kSubdivision = 12;
+	// 経度分割1つ分の角度
+	const float kLonEvery = pi * 2.0f / float(kSubdivision);
+	// 緯度分割1つ分の角度
+	const float kLatEvery = pi / float(kSubdivision);
+	// 緯度の方向に分割(-π/2 ～ π/2)
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+		float lat = -pi / 2.0f + kLatEvery * latIndex;
+		// 経度の方向に分割しながら線を描く(0～2π)
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+			//現在の経度
+			float lon = lonIndex * kLonEvery;
+			//world座標系でのa,b,cを求める
+			Vector3 a = {
+			  sphere.center.x + sphere.radius * std::cos(lat) * std::cos(lon),
+			  sphere.center.y + sphere.radius * std::sin(lat),
+			  sphere.center.z + sphere.radius * std::cos(lat) * std::sin(lon) };
+			Vector3 b = {
+			  sphere.center.x + sphere.radius * std::cos(lat + kLatEvery) * std::cos(lon),
+			  sphere.center.y + sphere.radius * std::sin(lat + kLatEvery),
+			  sphere.center.z + sphere.radius * std::cos(lat + kLatEvery) * std::sin(lon) };
+			Vector3 c = {
+			  sphere.center.x + sphere.radius * std::cos(lat) * std::cos(lon + kLonEvery),
+			  sphere.center.y + sphere.radius * std::sin(lat),
+			  sphere.center.z + sphere.radius * std::cos(lat) * std::sin(lon + kLonEvery) };
+			// 線を描く
+			//a,b,cをScreen座標系まで変換
+			Vector3 screenA = Transform(Transform(a, viewProjectionMatrix), viewportMatrix);
+			Vector3 screenB = Transform(Transform(b, viewProjectionMatrix), viewportMatrix);
+			Vector3 screenC = Transform(Transform(c, viewProjectionMatrix), viewportMatrix);
+			//ab,bcで線を引く
+			Novice::DrawLine(int(screenA.x), int(screenA.y), int(screenB.x), int(screenB.y), color);
+			Novice::DrawLine(int(screenA.x), int(screenA.y), int(screenC.x), int(screenC.y), color);
+		}
+	}
+}
+//グリッド
+void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
 	const float kGridHalfWidth = 2.0f;//Gridの半分の幅
 	const uint32_t kSubdivision = 10;//分割数
 	const float kGridEvery = (kGridHalfWidth * 2.0f) / float(kSubdivision);//1つ分の長さ
-	//奥から手間への線を徐々に引いていく
-	for(uint32_t xIndex=0;xIndex<=kSubdivision;++xIndex)
-	{
-	//上の情報を使ってワールド座標系を始点と終点を求める
-	
-	//スクリーン座標系まで変換をかける
-	//変換した座標を使って表示。色は薄い灰色(0xAAAAAAFF)
+	//奥から手前への線を順々に引いていく
+	for (uint32_t xIndex = 0; xIndex <= kSubdivision; ++xIndex) {
+		//x軸
+		float x = -kGridHalfWidth + (xIndex * kGridEvery);
+		//上の情報を使ってワールド座標系上の始点と終点を求める
+		Vector3 start{ x, 0.0f, -kGridHalfWidth };
+		Vector3 end{ x, 0.0f, kGridHalfWidth };
+		//スクリーン座標まで変換をかける
+		Vector3 startScreen = Transform(Transform(start, viewProjectionMatrix), viewportMatrix);
+		Vector3 endScreen = Transform(Transform(end, viewProjectionMatrix), viewportMatrix);
+		//変換したz表を使って表示。色は薄い灰色(0xAAAAAAFF)
+		Novice::DrawLine(
+			int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y),
+			x == 0.0f ? BLACK : 0xAAAAAAFF);
 	}
-	for(uint32_t zIndex=0;zIndex<=kSubdivision;++zIndex)
-	{
-	
+	//左から右への線を順々に引いていく
+	for (uint32_t zIndex = 0; zIndex <= kSubdivision; ++zIndex) {
+		//z軸
+		float z = -kGridHalfWidth + (zIndex * kGridEvery);
+		//上の情報を使ってワールド座標系上の始点と終点を求める
+		Vector3 start{ -kGridHalfWidth, 0.0f, z };
+		Vector3 end{ kGridHalfWidth, 0.0f, z };
+		//スクリーン座標まで変換をかける
+		Vector3 startScreen = Transform(Transform(start, viewProjectionMatrix), viewportMatrix);
+		Vector3 endScreen = Transform(Transform(end, viewProjectionMatrix), viewportMatrix);
+		//変換したz表を使って表示。色は薄い灰色(0xAAAAAAFF)
+		Novice::DrawLine(
+			int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y),
+			z == 0.0f ? BLACK : 0xAAAAAAFF);
 	}
-}
-//球
-void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatirx, const Matrix4x4& viewportMatrix, uint32_t color)
-{
-	const uint32_t kSubdivision = 16;//球の分割数
-	const float kLonEvery = 36;//経度分割1つ分の角度
-	const float kLatEvery = 36;//緯度分割1つ分の角度
-	//緯度の方向に分割 -π/2 ～ π/2
-	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex)
-	{
-		float lat = -(M_PI) / 2.0f + kLatEvery * latIndex;//現在の緯度
-		//経度の方向に分割　0～2π
-		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex)
-		{
-			float lon = lonIndex * kLonEvery;//現在の経度
-			//world座標系でのa,b,cを求める
-			Vector3 a, b, c;
-			//a,b,cをScreen座標系まで変換
-
-			//ab,bcで線を引く
-			Novice::DrawLine(a.x, a.y, b.x, b.y, color);
-			Novice::DrawLine(b.x, b.y, c.x, c.y, color);
-		}
-	}
-
 }
