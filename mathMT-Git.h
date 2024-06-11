@@ -2,6 +2,7 @@
 #include "Vector3.h"
 #include "Matrix4x4.h"
 #include "Sphere.h"
+#include"line.h"
 #include<cstdint>
 
 //加算
@@ -60,3 +61,7 @@ Vector3 Cross(const Vector3& v1, const Vector3& v2);
 void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatirx);
 //球
 void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatirx, const Matrix4x4& viewportMatrix, uint32_t color);
+//正射影ベクトル
+Vector3 Project(const Vector3& v1, const Vector3& v2);
+//最近接点
+Vector3 ClosestPoint(const Vector3&point,const Segment&segment);
