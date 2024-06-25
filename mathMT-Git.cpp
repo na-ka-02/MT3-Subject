@@ -1,7 +1,7 @@
 ﻿#include "mathMT-Git.h"
 #include <Novice.h>
 #define _USE_MATH_DEFINES
-#include "math.h"
+#include <math.h>
 #include <assert.h>
 #include "cmath"
 #include<numbers>
@@ -472,4 +472,20 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
 			int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y),
 			z == 0.0f ? BLACK : 0xAAAAAAFF);
 	}
+}
+//正射影ベクトル
+Vector3 Project(const Vector3& v1, const Vector3& v2)
+{
+	const Vector3 c{};
+	float dotAB = Dot(v1, v2);
+	c = dotAB / v2;
+
+	return Vector3(c);
+}
+//最近接点
+Vector3 ClosestPoint(const Vector3& point, const Segment& segment)
+{
+
+
+	return Vector3();
 }
