@@ -22,9 +22,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//カメラポジション
 	Vector3 cameraPosition{ 0.0f,0.4f,-7.0f };
 	//カメラの位置
-	Vector3 cameraTranslate{ 0.0f,2.9f,-6.49f };
+	Vector3 cameraTranslate{ 0.0f,1.9f,-6.49f };
 	//カメラの角度
-	Vector3 cameraRotate{ 0.26f,0.6f,0.0f };
+	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
 	//球体
 	Sphere sphere{ {0,0,0},0.5f };
 
@@ -52,40 +52,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
-		//入力
-		// 画面を1とするから、数図でかすぎたら行き過ぎてしまう
-		// ので、0.05とか小さい値にすること
-		//前
-		if (keys[DIK_S])
-		{
-			translate.z -= 0.05f;
-		}
-		//後ろ
-		if (keys[DIK_W])
-		{
-			translate.z += 0.05f;
-		}
-		//右
-		if (keys[DIK_D])
-		{
-			translate.x += 0.05f;
-		}
-		//左
-		if (keys[DIK_A])
-		{
-			translate.x -= 0.05f;
-		}
-		//図形回転
-		rotate.y -= 0.1f;
-
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
 		ImGui::DragFloat3("ShereCenter", &sphere.center.x, 0.01f);
 		ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
-		ImGui::InputFloat3("Project",&project.x,"%.3f",ImGuiInputTextFlags_ReadOnly);
+		ImGui::InputFloat3("Project", &project.x, "%.3f", ImGuiInputTextFlags_ReadOnly);
 		ImGui::End();
-
 
 		//各種行列の計算
 		//ワールド座標変換
@@ -110,17 +83,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
-		
-		//点の描画
-		Sphere pointSphere{point,0.01f};//1cmの球を描画
-		Sphere closestPointSphere{closestPoint,0.01f};
-		DrawSphere(pointSphere,viewProjectionMatrix,viewportMatrix,RED);
-		DrawSphere(closestPointSphere, viewProjectionMatrix, viewportMatrix, BLACK);
-		//線分の描画
-		Vector3 start=Transform(Transform(segment.origin,viewProjectionMatrix),viewportMatrix);
-		Vector3 end=Transform(Transform(Add(segment.origin,segment.diff),viewProjectionMatrix),viewportMatrix);
-		Novice::DrawLine(int(start.x),int(start.y),int(end.x),int(end.y),WHITE);
 
+		//グリッド
+		DrawGrid(viewProjectionMatrix, viewportMatrix);
+
+		//点の描画
+		Sphere pointSphere{ point,0.01f };//1cmの球を描画
+		Sphere closestPointSphere{ closestPoint,0.01f };
+		DrawSphere(pointSphere, viewProjectionMatrix, viewportMatrix, RED);
+		DrawSphere(closestPointSphere, viewProjectionMatrix, viewportMatrix, BLACK);
+
+		//線分の描画
+		Vector3 start = Transform(Transform(segment.origin, viewProjectionMatrix), viewportMatrix);
+		Vector3 end = Transform(Transform(Add(segment.origin, segment.diff), viewProjectionMatrix), viewportMatrix);
+		Novice::DrawLine(int(start.x), int(start.y), int(end.x), int(end.y), WHITE);
 
 		///
 		/// ↑描画処理ここまで
