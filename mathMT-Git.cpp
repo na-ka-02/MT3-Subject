@@ -5,6 +5,8 @@
 #include <assert.h>
 #include "cmath"
 #include<numbers>
+#include <iostream>
+#include <algorithm>
 
 //加算__
 Vector3 Add(const Vector3& v1, const Vector3& v2)
@@ -473,19 +475,26 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
 			z == 0.0f ? BLACK : 0xAAAAAAFF);
 	}
 }
-//正射影ベクトル
+//正射影ベクトル(c)
 Vector3 Project(const Vector3& v1, const Vector3& v2)
 {
-	const Vector3 c{};
+	//二乗
+	float v2Sq = Dot(v2, v2);
+	//内積
 	float dotAB = Dot(v1, v2);
-	c = dotAB / v2;
-
-	return Vector3(c);
+	//c=(a*b/b^2)*b
+	return Multiply(dotAB / v2Sq, v2);
 }
-//最近接点
+//最近接点(cp)
 Vector3 ClosestPoint(const Vector3& point, const Segment& segment)
 {
-
-
-	return Vector3();
+	//a=p-o
+	Vector3 a = Subtract(point, segment.origin);
+	//内積
+	//d=||p-cp||
+	float t = Dot(a, segment.diff) / Dot(segment.diff, segment.diff);
+	//範囲内範囲外
+	t = std::clamp(t, 0.0f, 1.0f);
+	//cp=o+projba
+	return Add(segment.origin, Multiply(t, segment.diff));
 }
