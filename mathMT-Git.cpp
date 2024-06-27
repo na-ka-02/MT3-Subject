@@ -498,3 +498,16 @@ Vector3 ClosestPoint(const Vector3& point, const Segment& segment)
 	//cp=o+projba
 	return Add(segment.origin, Multiply(t, segment.diff));
 }
+
+//当たり判定
+bool IsCollision(const Sphere& s1, const Sphere& s2)
+{
+	//二つの球の中心間の距離を求める
+	float distance = Length(Subtract(s2.center, s1.center));
+	//半径の合計よりも短ければ衝突
+	if (distance <= s1.radius + s2.radius)
+	{
+		return true;
+	}
+	return false;
+}

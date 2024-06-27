@@ -117,5 +117,6 @@
     <ClInclude Include="mathMT-Git.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="line.h" />
+    <ClInclude Include="AABB.h" />
   </ItemGroup>
 </Project>

@@ -65,3 +65,5 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatirx, con
 Vector3 Project(const Vector3& v1, const Vector3& v2);
 //最近接点
 Vector3 ClosestPoint(const Vector3&point,const Segment&segment);
+//当たり判定
+bool IsCollision(const Sphere&s1,const Sphere&s2);
