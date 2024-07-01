@@ -118,5 +118,6 @@
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="line.h" />
     <ClInclude Include="AABB.h" />
+    <ClInclude Include="Plane.h" />
   </ItemGroup>
 </Project>

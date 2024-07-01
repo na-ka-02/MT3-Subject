@@ -3,6 +3,7 @@
 #include "Matrix4x4.h"
 #include "Sphere.h"
 #include"line.h"
+#include"Plane.h"
 #include<cstdint>
 
 //加算
@@ -64,6 +65,12 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatirx, con
 //正射影ベクトル
 Vector3 Project(const Vector3& v1, const Vector3& v2);
 //最近接点
-Vector3 ClosestPoint(const Vector3&point,const Segment&segment);
-//当たり判定
-bool IsCollision(const Sphere&s1,const Sphere&s2);
+Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
+//当たり判定(球と球)
+bool IsCollision(const Sphere& s1, const Sphere& s2);
+//当たり判定(球と平面)
+bool IsCollision(const Sphere& s1, const Plane& p1);
+//無限投影平面
+Vector3 Perpendicular(const Vector3& vector);
+//平面の描画
+void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);

@@ -499,7 +499,7 @@ Vector3 ClosestPoint(const Vector3& point, const Segment& segment)
 	return Add(segment.origin, Multiply(t, segment.diff));
 }
 
-//当たり判定
+//当たり判定(球と球)
 bool IsCollision(const Sphere& s1, const Sphere& s2)
 {
 	//二つの球の中心間の距離を求める
@@ -510,4 +510,41 @@ bool IsCollision(const Sphere& s1, const Sphere& s2)
 		return true;
 	}
 	return false;
+}
+
+//当たり判定(球と平面)
+bool IsCollision(const Sphere& s1, const Plane& p1)
+{
+
+
+	return false;
+}
+
+//無限投影平面
+Vector3 Perpendicular(const Vector3& vector)
+{
+	if (vector.x != 0.0f || vector.y != 0)
+	{
+		return{ -vector.y,vector.x,0.0f };
+	}
+	return { 0.0f,-vector.x,vector.y };
+}
+
+//平面の描画
+void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	Vector3 center = Multiply(plane.distance, plane.nomal);//1
+	Vector3 perpendiculars[4]{};//perpendiculars(垂直)
+	perpendiculars[0] = Nomalize(Perpendicular(plane.nomal));//2
+	perpendiculars[1] = { -perpendiculars[0].x,-perpendiculars[0].y,-perpendiculars[0].z };//3
+	perpendiculars[2] = Cross(plane.nomal, perpendiculars[0]);
+	perpendiculars[3] = { -perpendiculars[2].x,-perpendiculars[2].y,-perpendiculars[2].z };//3
+	//6
+	Vector3 points[4]{};
+	for (int32_t index = 0; index < 4; ++index)
+	{
+		Vector3 extend = Multiply(2.0f, perpendiculars[index]);
+		Vector3 point = Add(center, extend);
+		points[index] = Transform(Transform(point, viewProjectionMatrix), viewportMatrix);
+	}
 }
