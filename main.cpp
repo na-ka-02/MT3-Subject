@@ -25,8 +25,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraTranslate{ 0.0f,1.9f,-6.49f };
 	//カメラの角度
 	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
-	//球体
-	Sphere sphere{ {0,0,0},0.5f };
+	//球体1
+	Sphere sphere1{ {0,0,0},0.5f };
+	//球体2
+	Sphere sphere2{ {0,0,0.7f},0.5f };
 
 	Segment segment{ {-2.0f,-1.0f,0.0f},{3.0f,2.0f,2.0f} };
 	Vector3 point{ -1.5f,0.6f,0.6f };
@@ -55,8 +57,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
-		ImGui::DragFloat3("ShereCenter", &sphere.center.x, 0.01f);
-		ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
+		ImGui::DragFloat3("ShereCenter", &sphere1.center.x, 0.01f);
+		ImGui::DragFloat("SphereRadius", &sphere1.radius, 0.01f);
 		ImGui::InputFloat3("Project", &project.x, "%.3f", ImGuiInputTextFlags_ReadOnly);
 		ImGui::End();
 
@@ -88,13 +90,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		DrawGrid(viewProjectionMatrix, viewportMatrix);
 
 		//点の描画
-		DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, RED);
-		DrawSphere(closestPointSphere, viewProjectionMatrix, viewportMatrix, BLACK);
+		DrawSphere(sphere1, viewProjectionMatrix, viewportMatrix, WHITE);
+		DrawSphere(sphere2, viewProjectionMatrix, viewportMatrix, WHITE);
 
-		//線分の描画
-		Vector3 start = Transform(Transform(segment.origin, viewProjectionMatrix), viewportMatrix);
-		Vector3 end = Transform(Transform(Add(segment.origin, segment.diff), viewProjectionMatrix), viewportMatrix);
-		Novice::DrawLine(int(start.x), int(start.y), int(end.x), int(end.y), WHITE);
+		if(IsCollision(sphere1, sphere2)==true)
+		{
+			DrawSphere(sphere1, viewProjectionMatrix, viewportMatrix, RED);
+		}
 
 		///
 		/// ↑描画処理ここまで
