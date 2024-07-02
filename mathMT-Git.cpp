@@ -513,9 +513,15 @@ bool IsCollision(const Sphere& s1, const Sphere& s2)
 }
 
 //当たり判定(球と平面)
-bool IsCollision(const Sphere& s1, const Plane& p1)
+bool IsCollision(const Sphere& sphere, const Plane& plane)
 {
+	//法線と球の中心の内積を求めて距離を出す
+	float distance = Dot(plane.nomal, sphere.center) - plane.distance;
 
+	if (fabsf(distance) - sphere.radius <= 0)
+	{
+		return true;
+	}
 
 	return false;
 }
@@ -547,4 +553,8 @@ void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const 
 		Vector3 point = Add(center, extend);
 		points[index] = Transform(Transform(point, viewProjectionMatrix), viewportMatrix);
 	}
+	Novice::DrawLine((int)points[0].x, (int)points[0].y, (int)points[2].x, (int)points[2].y, color);
+	Novice::DrawLine((int)points[1].x, (int)points[1].y, (int)points[2].x, (int)points[2].y, color);
+	Novice::DrawLine((int)points[0].x, (int)points[0].y, (int)points[3].x, (int)points[3].y, color);
+	Novice::DrawLine((int)points[1].x, (int)points[1].y, (int)points[3].x, (int)points[3].y, color);
 }

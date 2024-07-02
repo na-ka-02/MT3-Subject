@@ -69,7 +69,7 @@ Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
 //当たり判定(球と球)
 bool IsCollision(const Sphere& s1, const Sphere& s2);
 //当たり判定(球と平面)
-bool IsCollision(const Sphere& s1, const Plane& p1);
+bool IsCollision(const Sphere& sphere, const Plane& plsne);
 //無限投影平面
 Vector3 Perpendicular(const Vector3& vector);
 //平面の描画

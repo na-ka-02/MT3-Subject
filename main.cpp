@@ -25,10 +25,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraTranslate{ 0.0f,1.9f,-6.49f };
 	//カメラの角度
 	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
-	//球体1
-	Sphere sphere1{ {0,0,0},0.5f };
-	//球体2
-	Sphere sphere2{ {0,0,0.7f},0.5f };
+	//図形1
+	Sphere sphere{ {0,0,0},0.5f };
+	//図形2
+	Plane plane{ {0,1.0f,0.0f},0.5f };
 
 	Segment segment{ {-2.0f,-1.0f,0.0f},{3.0f,2.0f,2.0f} };
 	Vector3 point{ -1.5f,0.6f,0.6f };
@@ -57,9 +57,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
-		ImGui::DragFloat3("ShereCenter", &sphere1.center.x, 0.01f);
-		ImGui::DragFloat("SphereRadius", &sphere1.radius, 0.01f);
-		ImGui::InputFloat3("Project", &project.x, "%.3f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::DragFloat3("ShereCenter", &sphere.center.x, 0.01f);
+		ImGui::DragFloat("ShereRadius", &sphere.radius, 0.01f);
+		ImGui::DragFloat("Plane", &plane.distance, 0.01f);
+		ImGui::DragFloat3("Plane", &plane.nomal.x, 0.01f);
 		ImGui::End();
 
 		//各種行列の計算
@@ -77,6 +78,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Matrix4x4 worldViewProjectionMatrix = Multiply(woldMatrix, Multiply(viewMatrix, projectionMatrix));
 		//ビューポート座標変換
 		Matrix4x4 viewportMatrix = MakeViewportMatirix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
+		
+		Vector3 start = Transform(Transform(segment.origin, viewProjectionMatrix), viewportMatrix);
+		Vector3 end = Transform(Transform(Add(segment.origin, segment.diff), viewProjectionMatrix), viewportMatrix);
 
 		///
 		/// ↑更新処理ここまで
@@ -89,13 +93,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//グリッド
 		DrawGrid(viewProjectionMatrix, viewportMatrix);
 
-		//点の描画
-		DrawSphere(sphere1, viewProjectionMatrix, viewportMatrix, WHITE);
-		DrawSphere(sphere2, viewProjectionMatrix, viewportMatrix, WHITE);
+		//図形の描画
+		DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, WHITE);
+		DrawPlane(plane, viewProjectionMatrix, viewportMatrix, BLACK);
 
-		if(IsCollision(sphere1, sphere2)==true)
+		if (IsCollision(sphere, plane) == true)
 		{
-			DrawSphere(sphere1, viewProjectionMatrix, viewportMatrix, RED);
+			DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, RED);
 		}
 
 		///
