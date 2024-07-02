@@ -119,5 +119,6 @@
     <ClInclude Include="line.h" />
     <ClInclude Include="AABB.h" />
     <ClInclude Include="Plane.h" />
+    <ClInclude Include="Triangle.h" />
   </ItemGroup>
 </Project>

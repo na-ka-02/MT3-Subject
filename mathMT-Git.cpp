@@ -539,7 +539,7 @@ bool IsCollision(const Segment& line, const Plane& plane)
 	}
 
 	//tを求める
-	float t=(plane.distance-Dot(line.origin,plane.nomal))/dot;
+	float t = (plane.distance - Dot(line.origin, plane.nomal)) / dot;
 
 	//tの値と線の種類によって衝突しているかを判断する
 	if (t >= 0.0f && t <= 1.0f)
@@ -547,6 +547,101 @@ bool IsCollision(const Segment& line, const Plane& plane)
 		return true;
 	}
 
+	return false;
+}
+
+//当たり判定(線と三角形)
+bool IsCollision(const Segment& segment, const Triangle& triangle)
+{
+	Vector3 v0 = triangle.vertices[0];
+	Vector3 v1 = triangle.vertices[1];
+	Vector3 v2 = triangle.vertices[2];
+
+	Vector3 v01 =
+	{
+		v0.x - v1.x,
+		v0.y - v1.y,
+		v0.z - v1.z
+	};
+	Vector3 v20 =
+	{
+		v2.x - v0.x,
+		v2.y - v0.y,
+		v2.z - v0.z
+	};
+
+	Vector3 v12 =
+	{
+		v1.x - v2.x,
+		v1.y - v2.y,
+		v1.z - v2.z
+	};
+
+	Vector3 normal = Cross(v01, v20);
+
+	Vector3 segmentToPlane =
+	{
+		v0.x - segment.origin.x,
+		v0.y - segment.origin.y,
+		v0.z - segment.origin.z
+	};
+
+	float dot = Dot(segment.diff, normal);
+
+	if (dot == 0.0f)
+	{
+		return false;
+	}
+
+	float t = Dot(segmentToPlane, normal) / dot;
+
+	if (t < 0.0f || t > 1.0f)
+	{
+		return false;
+
+	}
+
+	Vector3 intersection =
+	{
+		{segment.origin.x + t * segment.diff.x},
+		{segment.origin.y + t * segment.diff.y},
+		{segment.origin.z + t * segment.diff.z}
+	};
+
+	Vector3 v0p =
+	{
+		intersection.x - v0.x,
+		intersection.y - v0.y,
+		intersection.z - v0.z
+	};
+
+	Vector3 v1p =
+	{
+		intersection.x - v1.x,
+		intersection.y - v1.y,
+		intersection.z - v1.z
+	};
+
+	Vector3 v2p =
+	{
+		intersection.x - v2.x,
+		intersection.y - v2.y,
+		intersection.z - v2.z
+	};
+
+	//各辺を結んだベクトルと、頂点と衝突点pを結んだベクトルのクロス積を取る
+	Vector3 cross01 = Cross(v01, v1p);
+	Vector3 cross12 = Cross(v12, v2p);
+	Vector3 cross20 = Cross(v20, v0p);
+
+	//全ての小三角形のクロス積と法線が同じ方向を向いたら衝突
+	if (Dot(cross01, normal) >= 0.0f &&
+		Dot(cross12, normal) >= 0.0f &&
+		Dot(cross20, normal) >= 0.0f)
+	{
+		//衝突
+		return true;
+	}
 	return false;
 }
 
@@ -582,3 +677,21 @@ void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const 
 	Novice::DrawLine((int)points[0].x, (int)points[0].y, (int)points[3].x, (int)points[3].y, color);
 	Novice::DrawLine((int)points[1].x, (int)points[1].y, (int)points[3].x, (int)points[3].y, color);
 }
+
+//三角形の描画
+void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	//三角形の頂点
+	Vector3 screenVertices[3]{};
+	//表示する三角形のx軸,y軸,z軸の位置
+	Vector3 kLocalVertices[3] = { {0.0f,0.5f,0.0f},{0.5f,-0.5f,0.0f},{-0.5f,-0.5f,0.0f} };
+	for (uint32_t i = 0; i < 3; ++i)
+	{
+		Vector3 ndcVertex = Transform(triangle.vertices[i], viewProjectionMatrix);
+		screenVertices[i] = Transform(ndcVertex, viewportMatrix);
+	}
+
+	Novice::DrawTriangle(int(screenVertices[0].x), int(screenVertices[0].y), int(screenVertices[1].x), int(screenVertices[1].y),
+		int(screenVertices[2].x), int(screenVertices[2].y), color, kFillModeWireFrame);
+}
+
