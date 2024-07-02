@@ -31,7 +31,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Plane plane{ {0,1.0f,0.0f},0.5f };
 	//図形3
 	Segment segment{ {-1.0f,-0.5f,0.0f},{2.0f,1.0f,1.0f} };
-	
+	//図形4
+	Triangle triangle{ {0.0f,1.0f,0.0f,1.0f,-1.0f,0.0f,-1.0f,-1.0f,0.0f} };
+
 	Vector3 point{ -1.5f,0.6f,0.6f };
 
 	Vector3 project = Project(Subtract(point, segment.origin), segment.diff);
@@ -79,7 +81,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Matrix4x4 worldViewProjectionMatrix = Multiply(woldMatrix, Multiply(viewMatrix, projectionMatrix));
 		//ビューポート座標変換
 		Matrix4x4 viewportMatrix = MakeViewportMatirix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
-		
+
 		Vector3 start = Transform(Transform(segment.origin, viewProjectionMatrix), viewportMatrix);
 		Vector3 end = Transform(Transform(Add(segment.origin, segment.diff), viewProjectionMatrix), viewportMatrix);
 
@@ -95,8 +97,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		DrawGrid(viewProjectionMatrix, viewportMatrix);
 
 		//図形の描画
-		DrawPlane(plane, viewProjectionMatrix, viewportMatrix, BLACK);
-		Novice::DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, WHITE);
+		DrawTriangle(triangle,viewProjectionMatrix,viewportMatrix,WHITE);
+			Novice::DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, WHITE);
 
 		//衝突
 		if (IsCollision(segment, plane) == true)
