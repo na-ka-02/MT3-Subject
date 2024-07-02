@@ -29,8 +29,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Sphere sphere{ {0,0,0},0.5f };
 	//図形2
 	Plane plane{ {0,1.0f,0.0f},0.5f };
-
-	Segment segment{ {-2.0f,-1.0f,0.0f},{3.0f,2.0f,2.0f} };
+	//図形3
+	Segment segment{ {-1.0f,-0.5f,0.0f},{2.0f,1.0f,1.0f} };
+	
 	Vector3 point{ -1.5f,0.6f,0.6f };
 
 	Vector3 project = Project(Subtract(point, segment.origin), segment.diff);
@@ -57,10 +58,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
-		ImGui::DragFloat3("ShereCenter", &sphere.center.x, 0.01f);
-		ImGui::DragFloat("ShereRadius", &sphere.radius, 0.01f);
 		ImGui::DragFloat("Plane", &plane.distance, 0.01f);
 		ImGui::DragFloat3("Plane", &plane.nomal.x, 0.01f);
+		ImGui::DragFloat3("Line", &segment.origin.x, 0.01f);
+		ImGui::DragFloat3("Line diff", &segment.diff.x, 0.01f);
 		ImGui::End();
 
 		//各種行列の計算
@@ -94,12 +95,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		DrawGrid(viewProjectionMatrix, viewportMatrix);
 
 		//図形の描画
-		DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, WHITE);
 		DrawPlane(plane, viewProjectionMatrix, viewportMatrix, BLACK);
+		Novice::DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, WHITE);
 
-		if (IsCollision(sphere, plane) == true)
+		//衝突
+		if (IsCollision(segment, plane) == true)
 		{
-			DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, RED);
+			Novice::DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, RED);
 		}
 
 		///

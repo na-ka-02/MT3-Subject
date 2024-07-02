@@ -526,6 +526,30 @@ bool IsCollision(const Sphere& sphere, const Plane& plane)
 	return false;
 }
 
+//当たり判定(球と平面)
+bool IsCollision(const Segment& line, const Plane& plane)
+{
+	//法線と線の内積を求める
+	float dot = Dot(plane.nomal, line.diff);
+
+	//垂直=平行なので衝突しない
+	if (dot == 0.0f)
+	{
+		return false;
+	}
+
+	//tを求める
+	float t=(plane.distance-Dot(line.origin,plane.nomal))/dot;
+
+	//tの値と線の種類によって衝突しているかを判断する
+	if (t >= 0.0f && t <= 1.0f)
+	{
+		return true;
+	}
+
+	return false;
+}
+
 //無限投影平面
 Vector3 Perpendicular(const Vector3& vector)
 {
