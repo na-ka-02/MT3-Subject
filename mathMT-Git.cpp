@@ -683,6 +683,65 @@ bool IsCollision(const AABB& aabb, const Sphere& sphere)
 
 	return false;
 }
+bool IsCollision(const AABB& aabb, const Segment& segment)
+{
+	float txMin, txMax;
+	float tyMin, tyMax;
+	float tzMin, tzMax;
+
+	if (segment.diff.x != 0.0f)
+	{
+		txMin = (aabb.min.x - segment.origin.x) / segment.diff.x;
+		txMax = (aabb.max.x - segment.origin.x) / segment.diff.x;
+	}
+	else
+	{
+		txMin = -INFINITY;
+		txMax = INFINITY;
+	}
+
+	if (segment.diff.y != 0.0f)
+	{
+		tyMin = (aabb.min.y - segment.origin.y) / segment.diff.y;
+		tyMax = (aabb.max.y - segment.origin.y) / segment.diff.y;
+	}
+	else
+	{
+		tyMin = -INFINITY;
+		tyMax = INFINITY;
+	}
+
+	if (segment.diff.z != 0.0f)
+	{
+		tzMin = (aabb.min.z - segment.origin.z) / segment.diff.z;
+		tzMax = (aabb.max.z - segment.origin.z) / segment.diff.z;
+	}
+	else
+	{
+		tzMin = -INFINITY;
+		tzMax = INFINITY;
+	}
+
+	//AABBとの衝交点(貫通点)のtが小さい方
+	float tNearX = min(txMin, txMax);
+	float tNearY = min(tyMin, tyMax);
+	float tNearZ = min(tzMin, tzMax);
+
+	//AABBとの衝交点(貫通点)のtが大きい方
+	float tFarX = max(txMin, txMax);
+	float tFarY = max(tyMin, tyMax);
+	float tFarZ = max(tzMin, tzMax);
+
+	float tmin = max(max(tNearX, tNearY), tNearZ);
+	float tmax = min(min(tFarX, tFarY), tFarZ);
+
+	if (tmin <= tmax && tmax >= 0 && tmin <= 1)
+	{
+		return true;
+	}
+
+	return false;
+}
 ;
 //無限投影平面
 Vector3 Perpendicular(const Vector3& vector)

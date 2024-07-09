@@ -25,15 +25,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraTranslate{ 0.0f,1.9f,-6.49f };
 	//カメラの角度
 	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
-	//図形1
+
+	//球
 	Sphere sphere{ {0,0,0},0.5f };
-	//図形2
+	//平面
 	Plane plane{ {0,1.0f,0.0f},0.5f };
-	//図形3
+	//線
 	Segment segment{ {-1.0f,-0.5f,0.0f},{2.0f,1.0f,1.0f} };
-	//図形4
+	//三角形
 	Triangle triangle{ {0.0f,1.0f,0.0f,1.0f,-1.0f,0.0f,-1.0f,-1.0f,0.0f} };
-	//図形5
+	//四角形
 	AABB aabb
 	{
 	.min{-0.5f,-0.5f,-0.5f},
@@ -66,16 +67,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
-		ImGui::DragFloat3("ShereCenter", &sphere.center.x, 0.01f);
-		ImGui::DragFloat("ShereRadius", &sphere.radius, 0.01f);
+		//ImGui::DragFloat3("ShereCenter", &sphere.center.x, 0.01f);
+		//ImGui::DragFloat("ShereRadius", &sphere.radius, 0.01f);
 		//ImGui::DragFloat("Plane", &plane.distance, 0.01f);
 		//ImGui::DragFloat3("Plane", &plane.nomal.x, 0.01f);
+		ImGui::DragFloat3("Line", &segment.origin.x, 0.01f);
+		ImGui::DragFloat3("Line diff", &segment.diff.x, 0.01f);
 		ImGui::DragFloat3("aabb1 min", &aabb.min.x, 0.01f);
 		ImGui::DragFloat3("aabb1 max", &aabb.max.x, 0.01f);
 		//ImGui::DragFloat3("aabb2 min", &aabb2.min.x, 0.01f);
 		//ImGui::DragFloat3("aabb2 max", &aabb2.max.x, 0.01f);
 		ImGui::End();
-		
+
 		//各種行列の計算
 		//ワールド座標変換
 		Matrix4x4 woldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, rotate, translate);
@@ -92,6 +95,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//ビューポート座標変換
 		Matrix4x4 viewportMatrix = MakeViewportMatirix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
+		//線の描画
+		Vector3 start = Transform(Transform(segment.origin, viewProjectionMatrix), viewportMatrix);
+		Vector3 end = Transform(Transform(Add(segment.origin, segment.diff), viewProjectionMatrix), viewportMatrix);
+
+
 		///
 		/// ↑更新処理ここまで
 		///
@@ -105,12 +113,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//図形の描画
 		//DrawPlane(plane, viewProjectionMatrix, viewportMatrix, BLACK);
-		DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, WHITE);
+		Novice::DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, WHITE);
+		//DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, WHITE);
 		DrawAABB(aabb, viewProjectionMatrix, viewportMatrix, WHITE);
 		//DrawAABB(aabb2, viewProjectionMatrix, viewportMatrix, WHITE);
 
 		//衝突
-		if (IsCollision(aabb, sphere) == true)
+		if (IsCollision(aabb, segment) == true)
 		{
 			DrawAABB(aabb, viewProjectionMatrix, viewportMatrix, RED);
 		}

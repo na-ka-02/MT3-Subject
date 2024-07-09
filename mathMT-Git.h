@@ -80,6 +80,8 @@ bool IsCollision(const Segment& segment, const Triangle& triangle);
 bool IsCollision(const AABB& a, const AABB& b);
 //当たり判定(AABBと球)
 bool IsCollision(const AABB& aabb, const Sphere& sphere);
+//当たり判定(AABBと線)
+bool IsCollision(const AABB& aabb, const Segment& segment);
 //無限投影平面
 Vector3 Perpendicular(const Vector3& vector);
 //平面の描画
