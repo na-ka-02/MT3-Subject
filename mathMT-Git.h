@@ -5,6 +5,7 @@
 #include"line.h"
 #include"Plane.h"
 #include"Triangle.h"
+#include"AABB.h"
 #include<cstdint>
 
 //加算
@@ -75,9 +76,13 @@ bool IsCollision(const Sphere& sphere, const Plane& plsne);
 bool IsCollision(const Segment& line, const Plane& plane);
 //当たり判定(線と三角形)
 bool IsCollision(const Segment& segment, const Triangle& triangle);
+//衝突判定
+bool IsCollision(const AABB& a, const AABB& b);
 //無限投影平面
 Vector3 Perpendicular(const Vector3& vector);
 //平面の描画
 void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 //三角形の描画
 void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+//AABBの描画
+void DrawAABB(const AABB&aabb,const Matrix4x4&viewProjectionMatrix,const Matrix4x4&viewportMatrix,uint32_t color);

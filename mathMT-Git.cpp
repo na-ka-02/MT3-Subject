@@ -645,6 +645,21 @@ bool IsCollision(const Segment& segment, const Triangle& triangle)
 	return false;
 }
 
+//衝突判定
+bool IsCollision(const AABB& a, const AABB& b)
+{
+	bool hitX = (a.min.x <= b.max.x && a.max.x >= b.min.x); //x軸
+	bool hitY = (a.min.y <= b.max.y && a.max.y >= b.min.y); //y軸
+	bool hitZ = (a.min.z <= b.max.z && a.max.z >= b.min.z); //z軸
+
+
+	if (hitX && hitY && hitZ)
+	{
+		//衝突
+		return true;
+	}
+	return false;
+};
 //無限投影平面
 Vector3 Perpendicular(const Vector3& vector)
 {
@@ -693,5 +708,44 @@ void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatri
 
 	Novice::DrawTriangle(int(screenVertices[0].x), int(screenVertices[0].y), int(screenVertices[1].x), int(screenVertices[1].y),
 		int(screenVertices[2].x), int(screenVertices[2].y), color, kFillModeWireFrame);
+}
+
+void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	Vector3 corners[8] = {
+			{aabb.min.x, aabb.min.y, aabb.min.z},
+			{aabb.max.x, aabb.min.y, aabb.min.z},
+			{aabb.min.x, aabb.max.y, aabb.min.z},
+			{aabb.max.x, aabb.max.y, aabb.min.z},
+			{aabb.min.x, aabb.min.y, aabb.max.z},
+			{aabb.max.x, aabb.min.y, aabb.max.z},
+			{aabb.min.x, aabb.max.y, aabb.max.z},
+			{aabb.max.x, aabb.max.y, aabb.max.z}
+	};
+
+	Vector3 screenCorners[8]{};
+	for (int i = 0; i < 8; i++)
+	{
+		Vector3 temp = Transform(corners[i], viewProjectionMatrix);
+		screenCorners[i] = Transform(temp, viewportMatrix);
+	}
+
+	//z軸の下の方の描画
+	Novice::DrawLine((int)screenCorners[0].x, (int)screenCorners[0].y, (int)screenCorners[1].x, (int)screenCorners[1].y, color);
+	Novice::DrawLine((int)screenCorners[1].x, (int)screenCorners[1].y, (int)screenCorners[3].x, (int)screenCorners[3].y, color);
+	Novice::DrawLine((int)screenCorners[3].x, (int)screenCorners[3].y, (int)screenCorners[2].x, (int)screenCorners[2].y, color);
+	Novice::DrawLine((int)screenCorners[2].x, (int)screenCorners[2].y, (int)screenCorners[0].x, (int)screenCorners[0].y, color);
+
+	// z軸の上の方の描画
+	Novice::DrawLine((int)screenCorners[4].x, (int)screenCorners[4].y, (int)screenCorners[5].x, (int)screenCorners[5].y, color);
+	Novice::DrawLine((int)screenCorners[5].x, (int)screenCorners[5].y, (int)screenCorners[7].x, (int)screenCorners[7].y, color);
+	Novice::DrawLine((int)screenCorners[7].x, (int)screenCorners[7].y, (int)screenCorners[6].x, (int)screenCorners[6].y, color);
+	Novice::DrawLine((int)screenCorners[6].x, (int)screenCorners[6].y, (int)screenCorners[4].x, (int)screenCorners[4].y, color);
+
+	//下と上の間の描画
+	Novice::DrawLine((int)screenCorners[0].x, (int)screenCorners[0].y, (int)screenCorners[4].x, (int)screenCorners[4].y, color);
+	Novice::DrawLine((int)screenCorners[1].x, (int)screenCorners[1].y, (int)screenCorners[5].x, (int)screenCorners[5].y, color);
+	Novice::DrawLine((int)screenCorners[2].x, (int)screenCorners[2].y, (int)screenCorners[6].x, (int)screenCorners[6].y, color);
+	Novice::DrawLine((int)screenCorners[3].x, (int)screenCorners[3].y, (int)screenCorners[7].x, (int)screenCorners[7].y, color);
 }
 

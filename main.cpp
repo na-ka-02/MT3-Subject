@@ -33,6 +33,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Segment segment{ {-1.0f,-0.5f,0.0f},{2.0f,1.0f,1.0f} };
 	//図形4
 	Triangle triangle{ {0.0f,1.0f,0.0f,1.0f,-1.0f,0.0f,-1.0f,-1.0f,0.0f} };
+	//衝突判定
+	AABB aabb1
+	{
+	.min{-0.5f,-0.5f,-0.5f},
+	.max{0.0f,0.0f,0.0f},
+	};
+
+	AABB aabb2
+	{
+	.min{0.2f,0.2f,0.2f},
+	.max{1.0f,1.0f,1.0f},
+	};
 
 	Vector3 point{ -1.5f,0.6f,0.6f };
 
@@ -60,10 +72,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
-		ImGui::DragFloat("Plane", &plane.distance, 0.01f);
-		ImGui::DragFloat3("Plane", &plane.nomal.x, 0.01f);
-		ImGui::DragFloat3("Line", &segment.origin.x, 0.01f);
-		ImGui::DragFloat3("Line diff", &segment.diff.x, 0.01f);
+		ImGui::DragFloat3("aabb1 min", &aabb1.min.x, 0.01f);
+		ImGui::DragFloat3("aabb1 max", &aabb1.max.x, 0.01f);
+		ImGui::DragFloat3("aabb2 min", &aabb2.min.x, 0.01f);
+		ImGui::DragFloat3("aabb2 max", &aabb2.max.x, 0.01f);
 		ImGui::End();
 
 		//各種行列の計算
@@ -82,9 +94,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//ビューポート座標変換
 		Matrix4x4 viewportMatrix = MakeViewportMatirix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
-		Vector3 start = Transform(Transform(segment.origin, viewProjectionMatrix), viewportMatrix);
-		Vector3 end = Transform(Transform(Add(segment.origin, segment.diff), viewProjectionMatrix), viewportMatrix);
-
 		///
 		/// ↑更新処理ここまで
 		///
@@ -97,13 +106,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		DrawGrid(viewProjectionMatrix, viewportMatrix);
 
 		//図形の描画
-		DrawTriangle(triangle,viewProjectionMatrix,viewportMatrix,WHITE);
-			Novice::DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, WHITE);
+		DrawAABB(aabb1, viewProjectionMatrix, viewportMatrix, WHITE);
+		DrawAABB(aabb2, viewProjectionMatrix, viewportMatrix, WHITE);
 
 		//衝突
-		if (IsCollision(segment, plane) == true)
+		if (IsCollision(aabb1, aabb2) == true)
 		{
-			Novice::DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, RED);
+			DrawAABB(aabb1, viewProjectionMatrix, viewportMatrix, RED);
 		}
 
 		///
