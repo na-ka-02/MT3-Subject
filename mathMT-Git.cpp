@@ -645,7 +645,7 @@ bool IsCollision(const Segment& segment, const Triangle& triangle)
 	return false;
 }
 
-//衝突判定
+//当たり判定(AABBとAABB)
 bool IsCollision(const AABB& a, const AABB& b)
 {
 	bool hitX = (a.min.x <= b.max.x && a.max.x >= b.min.x); //x軸
@@ -659,7 +659,31 @@ bool IsCollision(const AABB& a, const AABB& b)
 		return true;
 	}
 	return false;
-};
+}
+
+//当たり判定(AABBと球)
+bool IsCollision(const AABB& aabb, const Sphere& sphere)
+{
+	//最近接点を求める
+	Vector3 closestPoint
+	{
+		std::clamp(sphere.center.x,aabb.min.x,aabb.max.x),
+		std::clamp(sphere.center.y,aabb.min.y,aabb.max.y),
+		std::clamp(sphere.center.z,aabb.min.z,aabb.max.z),
+	};
+
+	//最近接点と球の中心との距離を求める
+	float distance = Length(Subtract(closestPoint, sphere.center));
+
+	//距離が半径よりも小さければ衝突
+	if (distance <= sphere.radius)
+	{
+		return true;
+	}
+
+	return false;
+}
+;
 //無限投影平面
 Vector3 Perpendicular(const Vector3& vector)
 {
@@ -710,6 +734,7 @@ void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatri
 		int(screenVertices[2].x), int(screenVertices[2].y), color, kFillModeWireFrame);
 }
 
+//AABBの描画
 void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
 {
 	Vector3 corners[8] = {
